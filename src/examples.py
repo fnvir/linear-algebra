@@ -56,7 +56,7 @@ print(LU) # LU Decomposition
 print('Slicing')
 print(a[:2,:1])
 print('only row slicing')
-print(a[1:2]) # equivalent to a.row_slice(4)
+print(a[1:2]) # equivalent to a.row_slice(1,2)
 print('only col slicing')
 print(a[:,1:]) # equivalent to a.col_slice(1,None)
 
@@ -79,7 +79,8 @@ f=Matrix([[1,2],[4,3],[5,6],[8,7]])
 print('Solve system of linear equations:')
 print(eqn_solve(e,f)) # expected: [[1.63333,1.3 ],[-0.166667,0.5 ][ 2.36667,1.7 ][-1.85,-1.35]]
 
+
 print('Best fit line using least square method: ')
-a=Matrix([10,15,20,25,30]).concat(Matrix([1]*5))
-b=Matrix([13,18,24,27,31])
-print(bestfit_line(a,b)) # expected [[0.9],[4.6]]
+x=[10,15,20,25,30]
+y=[13,18,24,27,31]
+print(bestfit_line(x,y)) # expected [[0.9],[4.6]]
