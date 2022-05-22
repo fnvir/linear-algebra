@@ -1,6 +1,4 @@
 from .matrix import Matrix
-from .matrix import DimensionError
-from .vector import Vector
 
 
 def eqn_solve(a:Matrix,b:Matrix):
@@ -39,10 +37,11 @@ def eqn_solve(a:Matrix,b:Matrix):
     return a[:,m:]
 
 
-def bestfit_line(a:Matrix,b:Matrix):
+def bestfit_line(x_vals,y_vals):
     """A^{T}Ax=A^{T}b"""
-    x=eqn_solve(a.T*a,a.T*b)
-    return x
+    a=Matrix(x_vals).concat(Matrix.from_order(len(x_vals),1,1))
+    b=Matrix(y_vals)
+    return Matrix.projection(a,b)
 
 
 def augmented_toStr(a:Matrix,m:int):
