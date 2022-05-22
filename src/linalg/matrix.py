@@ -4,6 +4,7 @@ __all__=['DimensionError','Matrix']
 
 
 class DimensionError(ValueError):
+    """Inaccurate dimension of matrix for specific operations"""
     def __init__(self,err='Dimensions do not match for this operation'):
         super().__init__(err)
 
@@ -13,6 +14,25 @@ class Matrix:
     Matrix
     """
     def __init__(self,_matrix,fractional=False):
+        """
+        :param _matrix: 1D or 2D iterables containing numbers or str representing numbers
+        :param fractional: bool whether to map every item to Fractions or not
+
+        Examples
+        --------
+        >>> Matrix([1,2,3])
+        [[1]
+         [2]
+         [3]]
+
+        >>> Matrix([['22/7','3.14',26],['1/4','-1/2',69]],True)
+        Matrix([[Fraction(22,7), Fraction(157,50), Fraction(26,1)], [Fraction(1,4), Fraction(-1,2), Fraction(69,1)]])
+
+        >>> Matrix([2]*5 for i in range(3))
+        [[2 2 2 2 2]
+         [2 2 2 2 2]
+         [2 2 2 2 2]]
+        """
         self.__a=[]
         for i in _matrix:
             if hasattr(i,'__getitem__') and type(i)!=str: self.__a.append([j for j in i])
@@ -271,7 +291,7 @@ class Matrix:
     def __add__(self,other):
         if not isinstance(other,Matrix):
             raise TypeError(f"Operation undefined for {type(self)} and {type(other)}")
-        if self.n!=other.n or self.m!=other.m: raise Exception('Dimension Error')
+        if self.n!=other.n or self.m!=other.m: raise DimensionError
         return Matrix([self[i][j]+other[i][j] for j in range(self.m)] for i in range(self.n))
 
     def __radd__(self, other):
@@ -357,8 +377,7 @@ class Matrix:
 
     def __str__(self):
         s=[]
-        f='n'
-        try: f'{self[0][0]:n}'
+        try: f='n'; f'{self[0][0]:n}'
         except Exception: f=''
         col_len=[max(len(f'{self[j][i]+0:{f}}') for j in range(self.n))+1 for i in range(self.m)]
         for i in range(self.n):

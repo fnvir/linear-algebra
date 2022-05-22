@@ -1,5 +1,5 @@
 from __future__ import annotations
-from numbers import *
+from numbers import Rational,Real,Integral
 from typing import Callable
 
 
