@@ -25,8 +25,9 @@ class Matrix:
          [2]
          [3]]
 
-        >>> Matrix([['22/7','3.14',26],['1/4','-1/2',69]],True)
-        Matrix([[Fraction(22,7), Fraction(157,50), Fraction(26,1)], [Fraction(1,4), Fraction(-1,2), Fraction(69,1)]])
+        >>> Matrix([['22/7','3.14',26],['1/4','-1/2',6.5]],True)
+        [[22/7 157/50  26 ]
+         [ 1/4  -1/2  13/2]]
 
         >>> Matrix([2]*5 for i in range(3))
         [[2 2 2 2 2]
@@ -37,6 +38,7 @@ class Matrix:
         for i in _matrix:
             if hasattr(i,'__getitem__') and type(i)!=str: self.__a.append([j for j in i])
             else: self.__a.append([i])
+            fractional|=any(type(j)==str for j in self.__a[-1])
         self.n,self.m= len(self.__a), len(self.__a[0])
         self.dim=(self.n,self.m)
         if fractional:
@@ -116,7 +118,7 @@ class Matrix:
         """Inverse of a matrix using Gauss-Jordan"""
         if self.det==0:
             raise ValueError('Singular Matrix')
-        x=self.concat(self.identity(self.n))
+        x=self | self.identity(self.n)
         x.m=self.m
         return x.rref()[:, self.m:]
 
@@ -180,6 +182,13 @@ class Matrix:
                     if U[i][i]==0: raise ValueError('LU Decomposition not possible')
                     L[j][i]=(self[j][i]-s)//U[i][i]
         return L,U
+
+    @staticmethod
+    def projection(__a,__b):
+        """Matrix projection = soln of A^{T}Ax=A^{T}b"""
+        p=(__a.T*__a) | (__a.T*__b)
+        p.m=__a.m
+        return p.rref().col_slice(p.m,None)
 
     def concat(self, other):
         """ Concatenates two matrices containing the same number of rows"""
@@ -291,7 +300,7 @@ class Matrix:
     def __add__(self,other):
         if not isinstance(other,Matrix):
             raise TypeError(f"Operation undefined for {type(self)} and {type(other)}")
-        if self.n!=other.n or self.m!=other.m: raise DimensionError
+        if self.n!=other.n or self.m!=other.m: raise Exception('Dimension Error')
         return Matrix([self[i][j]+other[i][j] for j in range(self.m)] for i in range(self.n))
 
     def __radd__(self, other):
@@ -365,6 +374,10 @@ class Matrix:
     def __invert__(self):
         'inverse'
         return self.inverse()
+
+    def __or__(self,other):
+        """equivalent to concat()"""
+        return self.concat(other)
 
     def __copy__(self):
         return Matrix(i for i in self)
